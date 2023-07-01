@@ -22,6 +22,7 @@ func main() {
 
 	router.GET(baseUrl+"/rates/:cryptocurrency/:fiat", handlers.GetPrice)
 	router.GET(baseUrl+"/rates/:cryptocurrency", handlers.GetCryptocurrencyRates)
+	router.GET(baseUrl+"/rates", handlers.GetAllCryptoCurrencyRate)
 
 	go func() {
 		for range time.Tick(4 * time.Minute) {

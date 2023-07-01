@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"firebond/helpers"
 	"firebond/utils"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
@@ -13,7 +14,7 @@ type PriceResponse struct {
 	Price float64 `json:"price"`
 }
 
-type MultipleRates struct {
+type MultipleRatesResponse struct {
 	Fiat  string
 	Value float64
 }
@@ -55,7 +56,7 @@ func GetPrice(c *gin.Context) {
 
 func GetCryptocurrencyRates(c *gin.Context) {
 	var crypto string = c.Param("cryptocurrency")
-	rates := []MultipleRates{}
+	rates := []MultipleRatesResponse{}
 
 	for _, fiat := range utils.SupportedFiatCurrencies {
 		rate, err := helpers.GetCryptocurrencyRate(crypto, fiat)
@@ -63,10 +64,29 @@ func GetCryptocurrencyRates(c *gin.Context) {
 		if err != nil {
 			log.Printf("Failed to get %s/%s rate: %v", crypto, fiat, err)
 		} else {
-			rates = append(rates, MultipleRates{
+			rates = append(rates, MultipleRatesResponse{
 				Fiat:  fiat,
 				Value: rate,
 			})
+		}
+	}
+
+	c.JSON(http.StatusOK, rates)
+}
+
+func GetAllCryptoCurrencyRate(c *gin.Context) {
+	rates := []MultipleRatesResponse{}
+	for _, crypto := range utils.SupportedCryptocurrencies {
+		for _, fiat := range utils.SupportedFiatCurrencies {
+			rate, err := helpers.GetCryptocurrencyRate(crypto, fiat)
+			if err != nil {
+				log.Printf("Failed to get %s/%s rate: %v", crypto, fiat, err)
+			} else {
+				rates = append(rates, MultipleRatesResponse{
+					Fiat:  fmt.Sprintf("%s/%s", crypto, fiat),
+					Value: rate,
+				})
+			}
 		}
 	}
 

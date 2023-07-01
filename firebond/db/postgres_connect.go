@@ -16,14 +16,13 @@ func GetDB() *gorm.DB {
 }
 
 func SetupPostgres() (*gorm.DB, error) {
-	dbHost, dbPort, dbName, dbUser, dbPassword := os.Getenv("DEV_DATABASE_HOST"), os.Getenv("DEV_DATABASE_PORT"), os.Getenv("DEV_DATABASE_NAME"), os.Getenv("DEV_DATABASE_USERNAME"), os.Getenv("DEV_DATABASE_PASSWORD")
+	dbHost, dbPort, dbName, dbUser := os.Getenv("DEV_DATABASE_HOST"), os.Getenv("DEV_DATABASE_PORT"), os.Getenv("DEV_DATABASE_NAME"), os.Getenv("DEV_DATABASE_USERNAME")
 
-	connectionString := fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=disable",
+	connectionString := fmt.Sprintf("host=%s port=%s user=%s dbname=%s sslmode=disable",
 		dbHost,
 		dbPort,
 		dbUser,
-		dbName,
-		dbPassword)
+		dbName)
 
 	db, err := gorm.Open(postgres.Open(connectionString), &gorm.Config{})
 

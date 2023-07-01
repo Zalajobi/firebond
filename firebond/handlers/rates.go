@@ -2,16 +2,14 @@ package handlers
 
 import (
 	"encoding/json"
-	"firebond/db"
 	"firebond/helpers"
-	"firebond/models"
+	"firebond/stores"
 	"firebond/utils"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
 	"strings"
-	"time"
 )
 
 type PriceResponse struct {
@@ -102,10 +100,7 @@ func GetAllCryptoCurrencyRate(c *gin.Context) {
 
 func GetCryptoCurrencyHistory(c *gin.Context) {
 	var fiat, crypto string = strings.ToLower(c.Param("fiat")), strings.ToLower(c.Param("cryptocurrency"))
-	var rates []models.Rates
-
-	dbConn := db.GetDB()
-	err := dbConn.Where("created_at >= ? AND name = ?", time.Now().Add(-24*time.Hour), fmt.Sprintf("%s/%s", crypto, fiat)).Find(&rates).Error
+	var rates, err = stores.GetFiatCryptoExchangeLastDay(crypto, fiat)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

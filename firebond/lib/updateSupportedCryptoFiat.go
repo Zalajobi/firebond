@@ -1,22 +1,21 @@
 package lib
 
 import (
-	"encoding/json"
+	"firebond/helpers"
 	"firebond/models"
 	"firebond/utils"
 	"fmt"
 	"gorm.io/gorm"
 	"log"
-	"net/http"
 	"time"
 )
 
 func UpdateRateData(db *gorm.DB) {
 	for _, crypto := range utils.SupportedCryptocurrencies {
 		for _, fiat := range utils.SupportedFiatCurrencies {
-			rate, err := GetCryptocurrencyRate(crypto, fiat)
+			rate, err := helpers.GetCryptocurrencyRate(crypto, fiat)
 			if err != nil {
-				log.Printf("Failed to get Bitcoin/USD rate: %v", err)
+				log.Printf("Failed to get %s/%s rate: %v", crypto, fiat, err)
 			} else {
 				rateModel := &models.Rates{
 					Name:      fmt.Sprintf("%s/%s", crypto, fiat),
@@ -31,22 +30,6 @@ func UpdateRateData(db *gorm.DB) {
 				}
 			}
 		}
+		//time.Sleep(8 * time.Second)
 	}
-}
-
-func GetCryptocurrencyRate(crypto, fiat string) (float64, error) {
-	url := "https://api.coingecko.com/api/v3/simple/price?ids=" + crypto + "&vs_currencies=" + fiat
-	response, err := http.Get(url)
-	if err != nil {
-		return 0, nil
-	}
-	defer response.Body.Close()
-
-	var result map[string]map[string]float64
-	err = json.NewDecoder(response.Body).Decode(&result)
-	if err != nil {
-		return 0, nil
-	}
-
-	return result[crypto][fiat], nil
 }

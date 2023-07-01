@@ -2,12 +2,20 @@ package handlers
 
 import (
 	"encoding/json"
+	"firebond/helpers"
+	"firebond/utils"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 )
 
 type PriceResponse struct {
 	Price float64 `json:"price"`
+}
+
+type MultipleRates struct {
+	Fiat  string
+	Value float64
 }
 
 func GetPrice(c *gin.Context) {
@@ -43,4 +51,24 @@ func GetPrice(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, priceResponse)
+}
+
+func GetCryptocurrencyRates(c *gin.Context) {
+	var crypto string = c.Param("cryptocurrency")
+	rates := []MultipleRates{}
+
+	for _, fiat := range utils.SupportedFiatCurrencies {
+		rate, err := helpers.GetCryptocurrencyRate(crypto, fiat)
+
+		if err != nil {
+			log.Printf("Failed to get %s/%s rate: %v", crypto, fiat, err)
+		} else {
+			rates = append(rates, MultipleRates{
+				Fiat:  fiat,
+				Value: rate,
+			})
+		}
+	}
+
+	c.JSON(http.StatusOK, rates)
 }

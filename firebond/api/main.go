@@ -21,9 +21,10 @@ func main() {
 	baseUrl := os.Getenv("BASE_URL")
 
 	router.GET(baseUrl+"/rates/:cryptocurrency/:fiat", handlers.GetPrice)
+	router.GET(baseUrl+"/rates/:cryptocurrency", handlers.GetCryptocurrencyRates)
 
 	go func() {
-		for range time.Tick(5 * time.Minute) {
+		for range time.Tick(4 * time.Minute) {
 			lib.UpdateRateData(db)
 		}
 	}()

@@ -9,9 +9,9 @@ import (
 type Rates struct {
 	gorm.Model
 	ID        uuid.UUID `gorm:"type:uuid;primaryKey;default:gen_random_uuid()"`
-	Name      string
-	CreatedAt time.Time
-	Crypto    string
-	Fiat      string
-	Value     float64
+	Name      string    `gorm:"not null"`
+	CreatedAt time.Time `gorm:"not null"`
+	Crypto    string    `gorm:"not null"`
+	Fiat      string    `gorm:"not null"`
+	Value     float64   `gorm:"not null"`
 }

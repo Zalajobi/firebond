@@ -1,7 +1,6 @@
-package test
+package handlers
 
 import (
-	"firebond/handlers"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"net/http/httptest"
@@ -10,7 +9,7 @@ import (
 
 func TestGetPrice(t *testing.T) {
 	router := gin.Default()
-	router.GET("/api/v1/firebond/pricing/rates/:cryptocurrency/:fiat", handlers.GetPrice)
+	router.GET("/api/v1/firebond/pricing/rates/:cryptocurrency/:fiat", GetPrice)
 
 	req, err := http.NewRequest("GET", "http://localhost:9001/api/v1/firebond/pricing/rates/bitcoin/usd", nil)
 	if err != nil {
@@ -26,7 +25,7 @@ func TestGetPrice(t *testing.T) {
 
 func TestGetCryptocurrencyRates(t *testing.T) {
 	router := gin.Default()
-	router.GET("/api/v1/firebond/pricing/rates/:cryptocurrency", handlers.GetCryptocurrencyRates)
+	router.GET("/api/v1/firebond/pricing/rates/:cryptocurrency", GetCryptocurrencyRates)
 
 	req, err := http.NewRequest("GET", "http://localhost:9001/api/v1/firebond/pricing/rates/bitcoin", nil)
 	if err != nil {
@@ -40,9 +39,9 @@ func TestGetCryptocurrencyRates(t *testing.T) {
 	}
 }
 
-func GetAllCryptoCurrencyRate(t *testing.T) {
+func GetAllCryptoCurrencyRateTest(t *testing.T) {
 	router := gin.Default()
-	router.GET("/api/v1/firebond/pricing/rates", handlers.GetAllCryptoCurrencyRate)
+	router.GET("/api/v1/firebond/pricing/rates", GetAllCryptoCurrencyRate)
 
 	req, err := http.NewRequest("GET", "http://localhost:9001/api/v1/firebond/pricing/rates", nil)
 	if err != nil {
@@ -56,9 +55,9 @@ func GetAllCryptoCurrencyRate(t *testing.T) {
 	}
 }
 
-func GetAccountEthereumBalance(t *testing.T) {
+func GetAccountEthereumBalanceTest(t *testing.T) {
 	router := gin.Default()
-	router.GET("/api/v1/firebond/ethereum/balance/:address", handlers.GetAccountEthereumBalance)
+	router.GET("/api/v1/firebond/ethereum/balance/:address", GetAccountEthereumBalance)
 
 	req, err := http.NewRequest("GET", "http://localhost:9001/api/v1/firebond/pricing/ethereum/balance/0x0d8775f648430679a709e98d2b0cb6250d2887ef", nil)
 	if err != nil {
@@ -72,9 +71,9 @@ func GetAccountEthereumBalance(t *testing.T) {
 	}
 }
 
-func GetCryptoCurrencyHistory(t *testing.T) {
+func GetCryptoCurrencyHistoryTest(t *testing.T) {
 	router := gin.Default()
-	router.GET("/api/v1/firebond/rates/history/:cryptocurrency/:fiat", handlers.GetCryptoCurrencyHistory)
+	router.GET("/api/v1/firebond/rates/history/:cryptocurrency/:fiat", GetCryptoCurrencyHistory)
 
 	req, err := http.NewRequest("GET", "http://localhost:9001/api/v1/firebond/pricing/rates/history/bitcoin/eur", nil)
 	if err != nil {

@@ -13,10 +13,11 @@ import (
 
 func main() {
 	err := godotenv.Load()
-	db, _ := db.SetupPostgres()
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
+
+	db, _ := db.SetupPostgres()
 	router := gin.Default()
 	baseUrl := os.Getenv("BASE_URL")
 

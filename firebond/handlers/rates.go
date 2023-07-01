@@ -2,12 +2,15 @@ package handlers
 
 import (
 	"encoding/json"
+	"firebond/db"
 	"firebond/helpers"
+	"firebond/models"
 	"firebond/utils"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	"strings"
 )
 
 type PriceResponse struct {
@@ -20,7 +23,7 @@ type MultipleRatesResponse struct {
 }
 
 func GetPrice(c *gin.Context) {
-	var fiat, cryptoCurrency string = c.Param("fiat"), c.Param("cryptocurrency")
+	var fiat, cryptoCurrency string = strings.ToLower(c.Param("fiat")), strings.ToLower(c.Param("cryptocurrency"))
 
 	// Fetch price from CoinGecko API via request
 	if fiat == "" || cryptoCurrency == "" {
@@ -55,7 +58,7 @@ func GetPrice(c *gin.Context) {
 }
 
 func GetCryptocurrencyRates(c *gin.Context) {
-	var crypto string = c.Param("cryptocurrency")
+	var crypto string = strings.ToLower(c.Param("cryptocurrency"))
 	rates := []MultipleRatesResponse{}
 
 	for _, fiat := range utils.SupportedFiatCurrencies {
@@ -78,6 +81,9 @@ func GetAllCryptoCurrencyRate(c *gin.Context) {
 	rates := []MultipleRatesResponse{}
 	for _, crypto := range utils.SupportedCryptocurrencies {
 		for _, fiat := range utils.SupportedFiatCurrencies {
+			crypto = strings.ToLower(crypto)
+			fiat = strings.ToLower(fiat)
+
 			rate, err := helpers.GetCryptocurrencyRate(crypto, fiat)
 			if err != nil {
 				log.Printf("Failed to get %s/%s rate: %v", crypto, fiat, err)
@@ -91,4 +97,16 @@ func GetAllCryptoCurrencyRate(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, rates)
+}
+
+func GetCryptoCurrencyHistory(c *gin.Context) {
+	var fiat, crypto string = strings.ToLower(c.Param("fiat")), strings.ToLower(c.Param("cryptocurrency"))
+	var rates []models.Rates
+
+	dbConn := db.GetDB()
+
+	//dbConn.Find(&rates{Name: fmt.Sprintf("%s/%s", crypto, fiat)})
+	dbConn.Model(models.Rates{Name: fmt.Sprintf("%s/%s", crypto, fiat)}).Find(&rates)
+
+	fmt.Println(rates)
 }

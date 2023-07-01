@@ -1,14 +1,14 @@
 package utils
 
 var SupportedFiatCurrencies = []string{
-	"usd",
-	"eur",
-	"gbp",
+	"USD",
+	"EUR",
+	"GBP",
 }
 
 var SupportedCryptocurrencies = []string{
-	"bitcoin",
-	"ethereum",
-	"litecoin",
-	"monero",
+	"BITCOIN",
+	"ETHEREUM",
+	"LITECOIN",
+	"MONERO",
 }

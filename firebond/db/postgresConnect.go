@@ -37,6 +37,7 @@ func SetupPostgres() (*gorm.DB, error) {
 		log.Fatalf("Failed to create rates table: %v", err)
 	}
 
+	dbInstance = db
 	log.Print("Connected to Database")
 
 	return db, nil

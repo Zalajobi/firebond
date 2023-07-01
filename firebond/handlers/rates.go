@@ -11,6 +11,7 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"time"
 )
 
 type PriceResponse struct {
@@ -104,9 +105,12 @@ func GetCryptoCurrencyHistory(c *gin.Context) {
 	var rates []models.Rates
 
 	dbConn := db.GetDB()
+	err := dbConn.Where("created_at >= ? AND name = ?", time.Now().Add(-24*time.Hour), fmt.Sprintf("%s/%s", crypto, fiat)).Find(&rates).Error
 
-	//dbConn.Find(&rates{Name: fmt.Sprintf("%s/%s", crypto, fiat)})
-	dbConn.Model(models.Rates{Name: fmt.Sprintf("%s/%s", crypto, fiat)}).Find(&rates)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
-	fmt.Println(rates)
+	c.JSON(http.StatusOK, rates)
 }

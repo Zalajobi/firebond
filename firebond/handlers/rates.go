@@ -34,7 +34,7 @@ func GetPrice(c *gin.Context) {
 	url := "https://api.coingecko.com/api/v3/simple/price?ids=" + cryptoCurrency + "&vs_currencies=" + fiat
 	response, err := http.Get(url)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, "Check request and try again")
 		return
 	}
 	defer response.Body.Close()
@@ -42,7 +42,7 @@ func GetPrice(c *gin.Context) {
 	var result map[string]map[string]float64
 	err = json.NewDecoder(response.Body).Decode(&result)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, "Something went wrong")
 		return
 	}
 
@@ -60,10 +60,17 @@ func GetCryptocurrencyRates(c *gin.Context) {
 	var crypto string = strings.ToLower(c.Param("cryptocurrency"))
 	rates := []MultipleRatesResponse{}
 
+	if crypto == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "cryptocurrency parameter is required"})
+		return
+	}
+
 	for _, fiat := range utils.SupportedFiatCurrencies {
+		fiat = strings.ToLower(fiat)
 		rate, err := helpers.GetCryptocurrencyRate(crypto, fiat)
 
 		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Fiat and cryptocurrency parameters are required"})
 			log.Printf("Failed to get %s/%s rate: %v", crypto, fiat, err)
 		} else {
 			rates = append(rates, MultipleRatesResponse{
@@ -100,6 +107,13 @@ func GetAllCryptoCurrencyRate(c *gin.Context) {
 
 func GetCryptoCurrencyHistory(c *gin.Context) {
 	var fiat, crypto string = strings.ToLower(c.Param("fiat")), strings.ToLower(c.Param("cryptocurrency"))
+
+	// Fetch price from CoinGecko API via request
+	if fiat == "" || crypto == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Fiat and cryptocurrency parameters are required"})
+		return
+	}
+
 	var rates, err = stores.GetFiatCryptoExchangeLastDay(crypto, fiat)
 
 	if err != nil {

@@ -20,8 +20,14 @@ type BalanceResponse struct {
 // GetAccountEthereumBalance Get Ethereum Balance Handler
 func GetAccountEthereumBalance(c *gin.Context) {
 	address := strings.ToLower(c.Param("address"))
-	apiKey := os.Getenv("DEV_INFURIA_API_KEY")
 
+	// Fetch price from CoinGecko API via request
+	if address == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Address parameter is required"})
+		return
+	}
+
+	apiKey := os.Getenv("DEV_INFURIA_API_KEY")
 	client, err := ethclient.Dial("https://mainnet.infura.io/v3/" + apiKey)
 	if err != nil {
 		log.Fatal(err)

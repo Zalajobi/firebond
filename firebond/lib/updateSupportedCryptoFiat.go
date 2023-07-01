@@ -33,6 +33,5 @@ func UpdateRateData(db *gorm.DB) {
 				}
 			}
 		}
-		//time.Sleep(8 * time.Second)
 	}
 }
